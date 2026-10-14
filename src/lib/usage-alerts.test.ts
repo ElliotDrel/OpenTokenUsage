@@ -69,4 +69,22 @@ describe("collectUsageAlerts", () => {
   it("does not announce a reset of a lightly used window", () => {
     expect(collect([line(0, 5 * HOUR)], [], [line(30, 10 * 60 * 1000)])).toEqual([])
   })
+
+  // Claude's resets_at jitters by milliseconds between probes (05:59:59.760, .777, .819 …).
+  it("a reset time that jitters is the same window: no repeat threshold alert", () => {
+    const [alert] = collect([line(82, 2 * HOUR)])
+    expect(collect([line(83, 2 * HOUR + 17)], alert!.keys)).toEqual([])
+    expect(collect([line(83, 2 * HOUR - 60 * 1000)], alert!.keys)).toEqual([])
+  })
+
+  it("the next window alerts again after a real reset", () => {
+    const [alert] = collect([line(90, 10 * 60 * 1000)])
+    expect(collect([line(82, 5 * HOUR)], alert!.keys).map((a) => a.title)).toEqual(["Claude: Session at 82%"])
+  })
+
+  it("a reset time that jitters later is not a reset", () => {
+    expect(collect([line(85, 2 * HOUR + 34)], [], [line(84, 2 * HOUR)]).map((a) => a.title)).toEqual([
+      "Claude: Session at 85%",
+    ])
+  })
 })

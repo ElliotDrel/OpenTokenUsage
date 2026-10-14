@@ -104,7 +104,8 @@ This file holds the project facts that are easy to get wrong.
   window theme: Mica takes its tint from the window, so a light page on dark Windows needs it.
 - Notifications (`src/lib/usage-alerts.ts`, pure + tested): the usage levels the user picks
   (`alertSettings.levels`, default 80/95), pace, reset; each once per provider+line+window, keys
-  persisted in settings (`sentUsageAlerts`). Toasts are silent (an unpackaged app can't give a toast
+  persisted in settings (`sentUsageAlerts`). Windows are matched by reset time ±1 h, not the exact
+  string: Claude's `resets_at` jitters by milliseconds every probe (it caused repeat 80% and fake reset alerts). Toasts are silent (an unpackaged app can't give a toast
   its own sound): `alert_sound.rs` plays the chosen sound with PlaySound (the `Notification.Default`
   alias, bundled `src-tauri/sounds/*.wav` from Kenney, CC0, ids test-synced with `ALERT_SOUNDS`, or
   the user's file, converted to 16-bit PCM WAV in `src/lib/alert-sound.ts`) and skips it during Do

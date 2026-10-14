@@ -15,6 +15,24 @@ export type UsageAlert = {
 const PACE_MIN_FRACTION = 0.5
 /** A reset is worth announcing only if the window was nearly full before it. */
 const RESET_MIN_FRACTION = 0.8
+/**
+ * Reset times this close are one window: Claude's resets_at jitters by milliseconds between probes,
+ * others by minutes. Shortcut: assumes no window is shorter than 2 h (the shortest today is 5 h).
+ */
+const SAME_WINDOW_MS = 60 * 60 * 1000
+
+/** Whether `prefix + window + suffix` was sent, matching the window by time so a jittering reset time is one window. */
+function wasSent(sent: ReadonlySet<string>, prefix: string, window: string, suffix: string): boolean {
+  if (sent.has(prefix + window + suffix)) return true
+  const windowMs = Date.parse(window)
+  if (!Number.isFinite(windowMs)) return false
+  for (const key of sent) {
+    if (!key.startsWith(prefix) || !key.endsWith(suffix)) continue
+    const sentMs = Date.parse(key.slice(prefix.length, key.length - suffix.length))
+    if (Math.abs(sentMs - windowMs) <= SAME_WINDOW_MS) return true
+  }
+  return false
+}
 
 function progressLines(lines: MetricLine[] | undefined): ProgressLine[] {
   return (lines ?? []).filter(
@@ -45,14 +63,15 @@ export function collectUsageAlerts(args: {
     const label = tLabel(line.label)
     const fraction = line.used / line.limit
     const window = line.resetsAt ?? "none"
-    const base = `${pluginId}|${line.label}|${window}`
+    const prefix = `${pluginId}|${line.label}|`
+    const base = prefix + window
     const resetsAtMs = line.resetsAt ? Date.parse(line.resetsAt) : Number.NaN
 
-    // Limit reset: same line, later reset time, and it was nearly full before.
+    // Limit reset: same line, a clearly later reset time (not jitter), and it was nearly full before.
     const previous = previousByLabel.get(line.label)
-    if (previous?.resetsAt && line.resetsAt && Date.parse(line.resetsAt) > Date.parse(previous.resetsAt)) {
-      const resetKey = `${pluginId}|${line.label}|${previous.resetsAt}|reset`
-      if (previous.used / previous.limit >= RESET_MIN_FRACTION && !sent.has(resetKey)) {
+    if (previous?.resetsAt && line.resetsAt && resetsAtMs - Date.parse(previous.resetsAt) > SAME_WINDOW_MS) {
+      const resetKey = `${prefix}${previous.resetsAt}|reset`
+      if (previous.used / previous.limit >= RESET_MIN_FRACTION && !wasSent(sent, prefix, previous.resetsAt, "|reset")) {
         alerts.push({
           title: t("alert.reset.title", { provider: providerName, label }),
           body: t("alert.reset.body"),
@@ -65,7 +84,7 @@ export function collectUsageAlerts(args: {
     const level = levels.find((value) => fraction * 100 >= value)
     if (level !== undefined) {
       const keys = levels.filter((value) => value <= level).map((value) => `${base}|t${value}`)
-      if (!sent.has(keys[0]!)) {
+      if (!wasSent(sent, prefix, window, `|t${level}`)) {
         const timeLeft = Number.isFinite(resetsAtMs) ? formatCompactDuration(resetsAtMs - nowMs) : null
         alerts.push({
           title: t("alert.threshold.title", { provider: providerName, label, percent: Math.round(fraction * 100) }),
@@ -83,7 +102,7 @@ export function collectUsageAlerts(args: {
     if (elapsedMs <= 0 || nowMs >= resetsAtMs) continue
     const etaMs = (line.limit - line.used) / (line.used / elapsedMs)
     const paceKey = `${base}|pace`
-    if (etaMs > 0 && etaMs < resetsAtMs - nowMs && !sent.has(paceKey)) {
+    if (etaMs > 0 && etaMs < resetsAtMs - nowMs && !wasSent(sent, prefix, window, "|pace")) {
       alerts.push({
         title: t("alert.pace.title", { provider: providerName, label }),
         body: t("alert.pace.body", { time: formatCompactDuration(etaMs) ?? "" }),
