@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.7.4
+
+Usage notifications come once per window again.
+
+### Bug Fixes
+- Notifications: past 80% the same "at 80%" alert kept coming back, and a "has reset" alert came although nothing had reset. Claude reports its reset time a few milliseconds differently on every refresh, and each new time counted as a new window; reset times less than an hour apart now count as the same window, for every provider
+
 ## v0.7.3
 
 Logins inside WSL get their own cards, Antigravity and Copilot work from their CLI logins, and the Codex logo follows the theme.
