@@ -41,6 +41,8 @@ export const ptBR: Messages = {
   "settings.autoRefresh.title": "Atualização automática",
   "settings.autoRefresh.desc": "Com que frequência o uso é atualizado",
   "settings.autoRefresh.minutes": "{n} min",
+  "settings.autoRefresh.smart": "Inteligente",
+  "settings.autoRefresh.smartHint": "Verifica a cada minuto após mudanças no uso. Após 5 minutos sem mudanças, o intervalo passa para 2, 5, 10 e depois 15 minutos por conta.",
   "settings.autoRefresh.hour": "1 hora",
   "settings.usageMode.title": "Exibição de uso",
   "settings.usageMode.desc": "Mostre o que resta ou o que já foi usado",
