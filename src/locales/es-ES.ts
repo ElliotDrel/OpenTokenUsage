@@ -27,6 +27,7 @@ export const esES: Messages = {
   "footer.updateCheckFailed": "No se pudo buscar actualizaciones",
   "footer.updateDownloadFailed": "No se pudo descargar la actualización",
   "footer.updateInstallFailed": "No se pudo instalar la actualización",
+  "footer.refreshing": "Actualizando…",
   "footer.paused": "En pausa",
   "footer.nextUpdate": "Próxima actualización en {time}",
   "footer.refreshNow": "Actualizar ahora",

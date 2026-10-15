@@ -27,6 +27,7 @@ export const fr: Messages = {
   "footer.updateCheckFailed": "Impossible de rechercher les mises à jour",
   "footer.updateDownloadFailed": "Impossible de télécharger la mise à jour",
   "footer.updateInstallFailed": "Impossible d'installer la mise à jour",
+  "footer.refreshing": "Actualisation…",
   "footer.paused": "En pause",
   "footer.nextUpdate": "Actualisation dans {time}",
   "footer.refreshNow": "Actualiser maintenant",

@@ -27,6 +27,7 @@ export const tr: Messages = {
   "footer.updateCheckFailed": "Güncelleştirmeler denetlenemedi",
   "footer.updateDownloadFailed": "Güncelleştirme indirilemedi",
   "footer.updateInstallFailed": "Güncelleştirme yüklenemedi",
+  "footer.refreshing": "Yenileniyor…",
   "footer.paused": "Duraklatıldı",
   "footer.nextUpdate": "Sonraki yenileme: {time} sonra",
   "footer.refreshNow": "Şimdi yenile",

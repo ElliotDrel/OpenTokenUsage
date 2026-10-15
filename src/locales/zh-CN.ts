@@ -27,6 +27,7 @@ export const zhCN: Messages = {
   "footer.updateCheckFailed": "无法检查更新",
   "footer.updateDownloadFailed": "无法下载更新",
   "footer.updateInstallFailed": "无法安装更新",
+  "footer.refreshing": "正在刷新…",
   "footer.paused": "已暂停",
   "footer.nextUpdate": "下次刷新：{time}后",
   "footer.refreshNow": "立即刷新",

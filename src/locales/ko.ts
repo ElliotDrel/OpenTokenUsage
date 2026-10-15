@@ -27,6 +27,7 @@ export const ko: Messages = {
   "footer.updateCheckFailed": "업데이트를 확인할 수 없습니다",
   "footer.updateDownloadFailed": "업데이트를 다운로드할 수 없습니다",
   "footer.updateInstallFailed": "업데이트를 설치할 수 없습니다",
+  "footer.refreshing": "새로 고치는 중…",
   "footer.paused": "일시 중지됨",
   "footer.nextUpdate": "{time} 후 다음 업데이트",
   "footer.refreshNow": "지금 새로 고침",

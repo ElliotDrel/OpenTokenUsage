@@ -27,6 +27,7 @@ export const ptBR: Messages = {
   "footer.updateCheckFailed": "Não foi possível verificar atualizações",
   "footer.updateDownloadFailed": "Não foi possível baixar a atualização",
   "footer.updateInstallFailed": "Não foi possível instalar a atualização",
+  "footer.refreshing": "Atualizando…",
   "footer.paused": "Pausado",
   "footer.nextUpdate": "Atualização em {time}",
   "footer.refreshNow": "Atualizar agora",

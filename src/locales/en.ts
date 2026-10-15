@@ -27,6 +27,7 @@ export const en = {
   "footer.updateCheckFailed": "Couldn't check for updates",
   "footer.updateDownloadFailed": "Couldn't download the update",
   "footer.updateInstallFailed": "Couldn't install the update",
+  "footer.refreshing": "Refreshing…",
   "footer.paused": "Paused",
   "footer.nextUpdate": "Next update in {time}",
   "footer.refreshNow": "Refresh now",

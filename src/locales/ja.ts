@@ -27,6 +27,7 @@ export const ja: Messages = {
   "footer.updateCheckFailed": "更新を確認できませんでした",
   "footer.updateDownloadFailed": "更新をダウンロードできませんでした",
   "footer.updateInstallFailed": "更新をインストールできませんでした",
+  "footer.refreshing": "更新中…",
   "footer.paused": "一時停止中",
   "footer.nextUpdate": "次の更新まで {time}",
   "footer.refreshNow": "今すぐ更新",
