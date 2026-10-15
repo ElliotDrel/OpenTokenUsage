@@ -1,9 +1,10 @@
 import { useState } from "react"
 import { fireEvent, render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { expect, it, vi } from "vitest"
 import { StripPlacement } from "@/components/strip-placement"
 
-it("selects either side and accepts only whole, bounded offsets", () => {
+function renderControls() {
   const onChange = vi.fn()
   function Controls() {
     const [placement, setPlacement] = useState({ position: "right" as "left" | "right", offset: 8 })
@@ -18,6 +19,11 @@ it("selects either side and accepts only whole, bounded offsets", () => {
     )
   }
   render(<Controls />)
+  return onChange
+}
+
+it("selects either side and accepts only whole, bounded offsets", () => {
+  const onChange = renderControls()
   expect(screen.getByRole("radio", { name: "Right" })).toHaveAttribute("aria-checked", "true")
   fireEvent.click(screen.getByRole("radio", { name: "Left" }))
   expect(onChange).toHaveBeenLastCalledWith({ position: "left" })
@@ -36,4 +42,26 @@ it("selects either side and accepts only whole, bounded offsets", () => {
     fireEvent.change(input, { target: { value } })
     expect(onChange).toHaveBeenLastCalledWith({ offset: Number(value) })
   }
+})
+
+it("lets users clear and retype an offset, and restores invalid drafts on blur", async () => {
+  const user = userEvent.setup()
+  const onChange = renderControls()
+  const input = screen.getByRole("spinbutton", { name: "Offset (px)" })
+  await user.clear(input)
+  expect(input).toHaveValue(null)
+  expect(onChange).not.toHaveBeenCalled()
+  await user.type(input, "120")
+  expect(input).toHaveValue(120)
+  expect(onChange).toHaveBeenLastCalledWith({ offset: 120 })
+  await user.tab()
+  expect(input).toHaveValue(120)
+
+  await user.clear(input)
+  await user.tab()
+  expect(input).toHaveValue(120)
+  fireEvent.change(input, { target: { value: "4097" } })
+  expect(input).toHaveValue(4097)
+  fireEvent.blur(input)
+  expect(input).toHaveValue(120)
 })

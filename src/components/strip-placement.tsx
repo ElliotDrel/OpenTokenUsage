@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { SegmentedControl } from "@/components/settings-section"
 import { t } from "@/lib/i18n"
 import type { SettingOption, TaskbarStripStyle } from "@/lib/settings"
@@ -16,6 +17,8 @@ export function StripPlacement({
   offset: number
   onChange: (patch: Partial<TaskbarStripStyle>) => void
 }) {
+  // Allow empty/invalid text while editing; only valid offsets reach the saved settings.
+  const [draft, setDraft] = useState<string | null>(null)
   return (
     <div className="space-y-2">
       <div>
@@ -34,9 +37,11 @@ export function StripPlacement({
           min={0}
           max={4096}
           step={1}
-          value={offset}
+          value={draft ?? offset}
           className="fluent-control w-24"
+          onBlur={() => setDraft(null)}
           onChange={(event) => {
+            setDraft(event.currentTarget.value)
             const next = event.currentTarget.valueAsNumber
             if (Number.isInteger(next) && next >= 0 && next <= 4096) onChange({ offset: next })
           }}
