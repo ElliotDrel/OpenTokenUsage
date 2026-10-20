@@ -69,8 +69,10 @@ export const ko: Messages = {
   "settings.strip.position": "위치",
   "settings.strip.positionLeft": "왼쪽",
   "settings.strip.positionRight": "오른쪽",
+
+  "settings.strip.positionCenter": "가운데",
   "settings.strip.offset": "간격 (px)",
-  "settings.strip.positionHint": "왼쪽은 작업 표시줄 가장자리, 오른쪽은 알림 영역 옆을 기준으로 합니다. 간격은 안쪽으로 적용되며 디스플레이 배율에 따라 조정됩니다.",
+  "settings.strip.positionHint": "오른쪽은 알림 영역 옆에 표시됩니다. 다른 쪽은 Windows 아이콘 정렬을 따릅니다. 아이콘이 가운데 정렬이면 왼쪽 가장자리, 왼쪽 정렬이면 작업 표시줄 가운데입니다. 시작, 앱, 위젯과 겹치지 않으며 간격은 디스플레이 배율에 따라 조정됩니다.",
   "settings.strip.enable": "작업 표시줄에 표시",
   "settings.strip.enableHint": "Windows에는 공식 위치가 없어 업데이트로 위치가 바뀌거나 숨겨질 수 있습니다. 켜져 있는 동안 알림 영역에는 앱 아이콘만 표시되며, 다른 아이콘 스타일을 고르면 이 표시가 꺼집니다.",
   "settings.strip.preview": "미리 보기",

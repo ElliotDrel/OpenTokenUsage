@@ -69,8 +69,10 @@ export const ja: Messages = {
   "settings.strip.position": "位置",
   "settings.strip.positionLeft": "左",
   "settings.strip.positionRight": "右",
+
+  "settings.strip.positionCenter": "中央",
   "settings.strip.offset": "余白 (px)",
-  "settings.strip.positionHint": "左はタスクバーの端、右は通知領域の隣を基準にします。余白は内側に適用され、画面の拡大率に合わせて調整されます。",
+  "settings.strip.positionHint": "右は通知領域の隣に表示します。もう一方は Windows のアイコン配置に合わせます。アイコンが中央揃えなら左端、左揃えならタスク バーの中央です。スタート、アプリ、ウィジェットには重なりません。余白は画面の拡大率に合わせて調整されます。",
   "settings.strip.enable": "タスク バーに表示",
   "settings.strip.enableHint": "Windows には公式の表示場所がないため、更新で位置がずれたり非表示になったりすることがあります。オンの間は通知領域にアプリのアイコンだけが表示され、別のアイコン スタイルを選ぶとこの表示はオフになります。",
   "settings.strip.preview": "プレビュー",

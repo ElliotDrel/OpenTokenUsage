@@ -69,8 +69,10 @@ export const fr: Messages = {
   "settings.strip.position": "Position",
   "settings.strip.positionLeft": "Gauche",
   "settings.strip.positionRight": "Droite",
+
+  "settings.strip.positionCenter": "Centre",
   "settings.strip.offset": "Décalage (px)",
-  "settings.strip.positionHint": "À gauche, le point de départ est le bord de la barre des tâches ; à droite, la zone de notification. Le décalage va vers l’intérieur et suit la mise à l’échelle de l’écran.",
+  "settings.strip.positionHint": "À droite, la bande se place à côté de la zone de notification. L’autre option suit l’alignement des icônes de Windows : le bord gauche si elles sont centrées, le milieu si elles sont à gauche. La bande évite Démarrer, les applications et les widgets. Le décalage suit la mise à l’échelle de l’écran.",
   "settings.strip.enable": "Afficher dans la barre des tâches",
   "settings.strip.enableHint": "Windows ne prévoit pas d'emplacement officiel pour cela : une mise à jour peut la déplacer ou la masquer. Tant qu'elle est active, la zone de notification n'affiche que l'icône de l'app ; choisir un autre style d'icône désactive la bande.",
   "settings.strip.preview": "Aperçu",

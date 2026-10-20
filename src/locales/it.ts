@@ -69,8 +69,10 @@ export const it: Messages = {
   "settings.strip.position": "Posizione",
   "settings.strip.positionLeft": "Sinistra",
   "settings.strip.positionRight": "Destra",
+
+  "settings.strip.positionCenter": "Centro",
   "settings.strip.offset": "Distanza (px)",
-  "settings.strip.positionHint": "A sinistra si parte dal bordo della barra delle applicazioni; a destra, accanto all’area di notifica. La distanza va verso l’interno e segue il ridimensionamento dello schermo.",
+  "settings.strip.positionHint": "A destra si trova accanto all’area di notifica. L’altra opzione segue l’allineamento delle icone di Windows: il bordo sinistro se sono centrate, il centro se sono a sinistra. La striscia non copre Start, le app e i widget. La distanza segue il ridimensionamento dello schermo.",
   "settings.strip.enable": "Mostra nella barra delle applicazioni",
   "settings.strip.enableHint": "Windows non ha un posto ufficiale per questo, quindi un aggiornamento può spostarla o nasconderla. Quando è attiva, l'area di notifica mostra solo l'icona dell'app; scegliere un altro stile di icona disattiva la striscia.",
   "settings.strip.preview": "Anteprima",

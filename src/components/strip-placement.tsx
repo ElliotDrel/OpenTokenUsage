@@ -1,10 +1,12 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { invoke } from "@tauri-apps/api/core"
 import { SegmentedControl } from "@/components/settings-section"
 import { t } from "@/lib/i18n"
 import type { SettingOption, TaskbarStripStyle } from "@/lib/settings"
 
-const POSITIONS: SettingOption<TaskbarStripStyle["position"]>[] = [
-  { value: "left", labelKey: "settings.strip.positionLeft" },
+// "left" is the taskbar's free side away from the tray: its middle when Windows aligns the icons left.
+const positions = (iconsLeft: boolean): SettingOption<TaskbarStripStyle["position"]>[] => [
+  { value: "left", labelKey: iconsLeft ? "settings.strip.positionCenter" : "settings.strip.positionLeft" },
   { value: "right", labelKey: "settings.strip.positionRight" },
 ]
 
@@ -19,12 +21,18 @@ export function StripPlacement({
 }) {
   // Allow empty/invalid text while editing; only valid offsets reach the saved settings.
   const [draft, setDraft] = useState<string | null>(null)
+  const [iconsLeft, setIconsLeft] = useState(false)
+  useEffect(() => {
+    invoke<boolean>("taskbar_icons_left")
+      .then((value) => setIconsLeft(value === true))
+      .catch((error) => console.error("Failed to read the taskbar alignment:", error))
+  }, [])
   return (
     <div className="space-y-2">
       <div>
         <div className="mb-1 text-xs text-muted-foreground">{t("settings.strip.position")}</div>
         <SegmentedControl
-          options={POSITIONS}
+          options={positions(iconsLeft)}
           value={position}
           onChange={(next) => onChange({ position: next })}
           ariaLabel={t("settings.strip.position")}

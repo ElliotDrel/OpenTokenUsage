@@ -1,8 +1,12 @@
 import { useState } from "react"
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { expect, it, vi } from "vitest"
+import { beforeEach, expect, it, vi } from "vitest"
 import { StripPlacement } from "@/components/strip-placement"
+
+const invokeMock = vi.hoisted(() => vi.fn())
+vi.mock("@tauri-apps/api/core", () => ({ invoke: invokeMock }))
+beforeEach(() => invokeMock.mockResolvedValue(false))
 
 function renderControls() {
   const onChange = vi.fn()
@@ -42,6 +46,14 @@ it("selects either side and accepts only whole, bounded offsets", () => {
     fireEvent.change(input, { target: { value } })
     expect(onChange).toHaveBeenLastCalledWith({ offset: Number(value) })
   }
+})
+
+it("calls the free side Center when Windows aligns the taskbar icons left", async () => {
+  invokeMock.mockResolvedValue(true)
+  const onChange = renderControls()
+  fireEvent.click(await screen.findByRole("radio", { name: "Center" }))
+  expect(invokeMock).toHaveBeenCalledWith("taskbar_icons_left")
+  expect(onChange).toHaveBeenLastCalledWith({ position: "left" })
 })
 
 it("lets users clear and retype an offset, and restores invalid drafts on blur", async () => {

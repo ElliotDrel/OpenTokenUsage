@@ -69,8 +69,10 @@ export const tr: Messages = {
   "settings.strip.position": "Konum",
   "settings.strip.positionLeft": "Sol",
   "settings.strip.positionRight": "Sağ",
+
+  "settings.strip.positionCenter": "Orta",
   "settings.strip.offset": "Boşluk (px)",
-  "settings.strip.positionHint": "Sol, görev çubuğunun kenarından; sağ, bildirim alanının yanından başlar. Boşluk içeriye doğru uygulanır ve ekran ölçeğine göre ayarlanır.",
+  "settings.strip.positionHint": "Sağ, tepsinin yanında durur. Diğer seçenek Windows'taki simge hizalamasına uyar: simgeler ortadaysa sol kenar, soldaysa görev çubuğunun ortası. Şerit Başlat'ın, uygulamaların ve Widget'ların üstüne binmez. Boşluk ekran ölçeğine göre ayarlanır.",
   "settings.strip.enable": "Görev çubuğunda göster",
   "settings.strip.enableHint": "Windows'ta bunun resmi bir yeri yok; bir güncelleme yerini kaydırabilir veya gizleyebilir. Açıkken bildirim alanında yalnızca uygulama simgesi kalır; başka bir simge stili seçmek şeridi kapatır.",
   "settings.strip.preview": "Önizleme",

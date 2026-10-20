@@ -584,6 +584,7 @@ pub fn run() {
             setup_actions::open_taskbar_settings,
             taskbar_strip::set_taskbar_strip,
             taskbar_strip::list_taskbar_monitors,
+            taskbar_strip::taskbar_icons_left,
             accounts::list_accounts,
             accounts::add_account,
             accounts::remove_account,

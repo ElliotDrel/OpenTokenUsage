@@ -69,8 +69,10 @@ export const en = {
   "settings.strip.position": "Position",
   "settings.strip.positionLeft": "Left",
   "settings.strip.positionRight": "Right",
+
+  "settings.strip.positionCenter": "Center",
   "settings.strip.offset": "Offset (px)",
-  "settings.strip.positionHint": "Left starts at the taskbar edge; right starts beside the tray. Offset moves inward and scales with your display.",
+  "settings.strip.positionHint": "Right sits beside the tray. The other side follows how Windows aligns your icons: the left edge when they're centered, the middle when they're on the left. The strip stays clear of Start, apps and Widgets. Offset adds space and scales with your display.",
   "settings.strip.enable": "Show on the taskbar",
   "settings.strip.enableHint": "Windows has no official place for this, so an update may move or hide it. While it's on, the tray shows only the app icon; picking another tray style turns the strip off.",
   "settings.strip.preview": "Preview",

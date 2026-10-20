@@ -69,8 +69,10 @@ export const ptBR: Messages = {
   "settings.strip.position": "Posição",
   "settings.strip.positionLeft": "Esquerda",
   "settings.strip.positionRight": "Direita",
+
+  "settings.strip.positionCenter": "Centro",
   "settings.strip.offset": "Espaçamento (px)",
-  "settings.strip.positionHint": "À esquerda, começa na borda da barra de tarefas; à direita, ao lado da bandeja. O espaçamento avança para dentro e acompanha a escala da tela.",
+  "settings.strip.positionHint": "Direita fica ao lado da bandeja. A outra opção segue o alinhamento dos ícones do Windows: a borda esquerda quando estão centralizados, o centro quando estão à esquerda. A faixa não cobre Iniciar, apps nem Widgets. O espaçamento acompanha a escala da tela.",
   "settings.strip.enable": "Mostrar na barra de tarefas",
   "settings.strip.enableHint": "O Windows não tem um lugar oficial para isso, então uma atualização pode movê-la ou ocultá-la. Enquanto estiver ativa, a área de notificação mostra só o ícone do app; escolher outro estilo de ícone desativa a faixa.",
   "settings.strip.preview": "Prévia",

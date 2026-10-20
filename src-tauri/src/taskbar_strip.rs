@@ -1,5 +1,6 @@
 //! Experimental taskbar strip: provider logos with session/weekly numbers inside the Windows 11
-//! taskbar, at its left edge or left of the notification area.
+//! taskbar: left of the notification area, or on the taskbar's other free side (`placement.rs`),
+//! clear of the buttons that UI Automation measures (`uia.rs`).
 //!
 //! Windows has no API for this (deskbands are gone in Windows 11), so like TrafficMonitor each
 //! strip is a layered window made a child of a taskbar: the main one (`Shell_TrayWnd`) and, when the
@@ -14,7 +15,32 @@ use std::sync::{Mutex, OnceLock};
 use tauri::AppHandle;
 
 mod placement;
+#[cfg(windows)]
+mod uia;
+use placement::Layout;
 pub use placement::Placement;
+
+/// Windows aligns the taskbar icons left (Settings → Personalization → Taskbar); missing = centered.
+#[cfg(windows)]
+fn icons_left() -> bool {
+    winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER)
+        .open_subkey(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced")
+        .and_then(|key| key.get_value::<u32, _>("TaskbarAl"))
+        .is_ok_and(|value| value == 0)
+}
+
+/// For Settings: the strip's second position is Left on a centered taskbar and Center on this one.
+#[tauri::command]
+pub fn taskbar_icons_left() -> bool {
+    #[cfg(windows)]
+    {
+        icons_left()
+    }
+    #[cfg(not(windows))]
+    {
+        false
+    }
+}
 
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -296,7 +322,7 @@ mod win {
     const RECONCILE_MS: u32 = 2000;
     /// A secondary Windows 11 taskbar has no notification-area window to measure: its clock and
     /// Show desktop take about this much at 100 % (TrafficMonitor uses the same).
-    /// ponytail: fixed width; a wider clock (larger text) overlaps. UI Automation can find the edge.
+    /// Only a fallback now: the clock's buttons come from UI Automation when it can see them.
     const SECONDARY_CLOCK_WIDTH: i32 = 88;
 
     fn wide(text: &str) -> Vec<u16> {
@@ -647,6 +673,15 @@ mod win {
                 });
             }
             request_missing_dpis(strips, &have_dpis);
+            super::uia::watch(
+                strips.iter().map(|strip| strip.taskbar as isize).collect(),
+                || {
+                    if let Ok(state) = shared().lock() {
+                        wake(state.thread_id);
+                    }
+                },
+                || shared().lock().is_ok_and(|state| state.thread_running),
+            );
             for strip in strips.iter() {
                 place(strip);
             }
@@ -707,7 +742,10 @@ mod win {
         unsafe {
             // Copy out: the calls below talk to Explorer, never hold the lock across them.
             let (pixels, placement) = match shared().lock() {
-                Ok(state) => (image_for(&state.images, strip.dpi).cloned(), state.placement),
+                Ok(state) => (
+                    image_for(&state.images, strip.dpi).cloned(),
+                    state.placement,
+                ),
                 Err(_) => return,
             };
             let Some(pixels) = pixels else {
@@ -737,7 +775,16 @@ mod win {
             } else {
                 bar.right - scaled(SECONDARY_CLOCK_WIDTH, strip.dpi)
             };
-            let Some(x) = placement.x(right - bar.left, pixels.width, strip.dpi) else {
+            let layout = super::Layout {
+                width: bar.right - bar.left,
+                tray_left: right - bar.left,
+                occupied: super::uia::spans(strip.taskbar as isize)
+                    .into_iter()
+                    .map(|(start, end)| (start - bar.left, end - bar.left))
+                    .collect(),
+                icons_left: super::icons_left(),
+            };
+            let Some(x) = placement.x(&layout, pixels.width, strip.dpi) else {
                 ShowWindow(strip.hwnd, SW_HIDE);
                 return;
             };

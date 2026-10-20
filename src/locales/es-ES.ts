@@ -69,8 +69,10 @@ export const esES: Messages = {
   "settings.strip.position": "Posición",
   "settings.strip.positionLeft": "Izquierda",
   "settings.strip.positionRight": "Derecha",
+
+  "settings.strip.positionCenter": "Centro",
   "settings.strip.offset": "Separación (px)",
-  "settings.strip.positionHint": "Izquierda parte del borde de la barra de tareas; derecha, junto a la bandeja. La separación se aplica hacia dentro y se ajusta a la escala de la pantalla.",
+  "settings.strip.positionHint": "Derecha queda junto a la bandeja. La otra opción sigue la alineación de los iconos de Windows: el borde izquierdo si están centrados y el centro si están a la izquierda. La franja no tapa Inicio, las aplicaciones ni los widgets. La separación se ajusta a la escala de la pantalla.",
   "settings.strip.enable": "Mostrar en la barra de tareas",
   "settings.strip.enableHint": "Windows no tiene un sitio oficial para esto, así que una actualización puede moverla u ocultarla. Mientras esté activa, el área de notificación muestra solo el icono de la aplicación; elegir otro estilo de icono desactiva la franja.",
   "settings.strip.preview": "Vista previa",
