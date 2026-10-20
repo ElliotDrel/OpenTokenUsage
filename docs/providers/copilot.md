@@ -4,27 +4,21 @@ Tracks GitHub Copilot usage quotas for both paid and free tier users.
 
 ## Authentication
 
-The plugin looks for a GitHub token in this order:
-
-1. **OpenUsage Keychain** (`OpenUsage-copilot`) — Token previously cached by the plugin
-2. **GitHub CLI Keychain** (`gh:github.com`) — Token from `gh auth login`
-3. **State File** (`auth.json`) — Fallback file-based storage
+The plugin reads the GitHub CLI token (`gh auth login`) from Windows Credential Manager (`gh:github.com:`) on every probe and never stores it. The gh token can carry repo, org and workflow scopes, so it is not copied anywhere; a plain-text copy that versions up to 0.7.4 left in `auth.json` is wiped on the next probe.
 
 ### Setup
 
 Install and authenticate with the GitHub CLI:
 
 ```bash
-# Install gh CLI (macOS)
-brew install gh
+# Install gh CLI
+winget install GitHub.cli
 
 # Authenticate
 gh auth login
 ```
 
-Choose "GitHub.com" and follow the prompts. The plugin will automatically read the token from the gh CLI keychain.
-
-Once authenticated via gh CLI, the plugin caches the token in the OpenUsage keychain for faster access on subsequent probes.
+Choose "GitHub.com" and follow the prompts. The plugin will automatically read the token from Credential Manager.
 
 ## API
 

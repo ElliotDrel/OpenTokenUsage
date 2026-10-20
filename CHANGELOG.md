@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.7.5
+
+Antigravity shows its Gemini limits again, and Copilot no longer keeps a copy of your GitHub login.
+
+### Bug Fixes
+- Antigravity: the tray showed "--" and the card had only the Claude meters. Google's daily server left the Gemini limits out of its answer; Antigravity now asks the main server first
+
+### Security
+- Copilot: the GitHub CLI login was copied into a plain-text file in the app's data folder, where it kept all of its GitHub permissions and still worked after "gh auth logout". It is now read from Windows Credential Manager on every refresh and never saved, and the old copy is deleted on the next refresh
+- Logs: a network error could write Kiro's AWS profile ID to the log, and log lines showed your Windows user name in file paths. Both are hidden now
+
 ## v0.7.4
 
 Usage notifications come once per window again.

@@ -334,6 +334,11 @@ fn redact_url(url: &str) -> String {
     }
 }
 
+/// reqwest's error text embeds the full URL; plugins log it, so its query values must be redacted too.
+fn request_error_message(err: reqwest::Error, url: &str) -> String {
+    format!("{} ({})", err.without_url(), redact_url(url))
+}
+
 /// Redact sensitive patterns in response body for logging
 fn redact_body(body: &str) -> String {
     let mut result = body.to_string();
@@ -484,6 +489,12 @@ pub(crate) fn redact_log_message(msg: &str) -> String {
         regex_lite::Regex::new(r#"(/(?:Users|home|opt|private|var|tmp|Applications)/[^\s"')]+)"#)
     {
         result = path_re.replace_all(&result, "[PATH]").to_string();
+    }
+    // Windows profiles (C:\Users\<name>) and WSL homes (\\wsl.localhost\<distro>\home\<name>).
+    if let Ok(user_re) =
+        regex_lite::Regex::new(r#"(?i)([a-z]:[\\/]Users[\\/]|\\home\\)[^\\/"'\r\n]+"#)
+    {
+        result = user_re.replace_all(&result, "${1}[USER]").to_string();
     }
     result
 }
@@ -1033,9 +1044,9 @@ fn inject_http<'js>(
                     builder = builder.body(body);
                 }
 
-                let response = builder
-                    .send()
-                    .map_err(|e| Exception::throw_message(&ctx_inner, &e.to_string()))?;
+                let response = builder.send().map_err(|e| {
+                    Exception::throw_message(&ctx_inner, &request_error_message(e, &req.url))
+                })?;
 
                 let status = response.status().as_u16();
                 let mut resp_headers = std::collections::HashMap::new();
@@ -3684,6 +3695,40 @@ mod tests {
             redacted.contains("origin=AI_EDITOR"),
             "non-sensitive params should remain visible, got: {}",
             redacted
+        );
+    }
+
+    #[test]
+    fn request_error_message_keeps_query_values_redacted() {
+        // A transport error (here: nothing listens on port 1) carries the full request URL.
+        let url = "http://127.0.0.1:1/getUsageLimits?profileArn=arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK";
+        let err = reqwest::blocking::Client::new()
+            .get(url)
+            .send()
+            .unwrap_err();
+        let msg = request_error_message(err, url);
+        assert!(!msg.contains("699475941385"), "profileArn leaked: {msg}");
+        assert!(
+            msg.contains("127.0.0.1:1/getUsageLimits"),
+            "endpoint should stay visible: {msg}"
+        );
+    }
+
+    #[test]
+    fn redact_log_message_hides_windows_user_names() {
+        let msg = r"readJson failed for C:\Users\Jane Doe\AppData\Roaming/com.sunstory.openusage/plugins_data/kiro/auth.json; WSL home \\wsl.localhost\Ubuntu\home\jdoe\.codex";
+        let out = redact_log_message(msg);
+        assert!(
+            !out.contains("Jane") && !out.contains("jdoe"),
+            "user name leaked: {out}"
+        );
+        assert!(
+            out.contains(r"C:\Users\[USER]\AppData"),
+            "rest of the path should stay: {out}"
+        );
+        assert!(
+            out.contains(r"\home\[USER]\.codex"),
+            "rest of the path should stay: {out}"
         );
     }
 

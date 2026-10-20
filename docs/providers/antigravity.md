@@ -221,9 +221,9 @@ Content-Type: application/json
 User-Agent: antigravity
 ```
 
-Base URLs tried in order:
-1. `https://daily-cloudcode-pa.googleapis.com`
-2. `https://cloudcode-pa.googleapis.com`
+Base URLs tried in order (production first: daily can answer 200 without the Gemini group):
+1. `https://cloudcode-pa.googleapis.com`
+2. `https://daily-cloudcode-pa.googleapis.com`
 
 ### agy keychain fallback
 

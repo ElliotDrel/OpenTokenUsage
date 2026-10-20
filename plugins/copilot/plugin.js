@@ -1,5 +1,4 @@
 (function () {
-  const KEYCHAIN_SERVICE = "OpenUsage-copilot";
   const GH_KEYCHAIN_SERVICE = "gh:github.com";
   const USAGE_URL = "https://api.github.com/copilot_internal/user";
 
@@ -22,43 +21,15 @@
     }
   }
 
-  function saveToken(ctx, token) {
-    try {
-      ctx.host.keychain.writeGenericPassword(
-        KEYCHAIN_SERVICE,
-        JSON.stringify({ token: token }),
-      );
-    } catch (e) {
-      ctx.host.log.warn("keychain write failed: " + String(e));
-    }
-    writeJson(ctx, ctx.app.pluginDataDir + "/auth.json", { token: token });
+  // Versions up to 0.7.4 copied the gh token into auth.json in plain text. The token can carry
+  // repo/org/workflow scopes and outlives `gh auth logout`, so wipe it (the host fs has no remove).
+  function wipeLegacyTokenCopy(ctx) {
+    const path = ctx.app.pluginDataDir + "/auth.json";
+    const data = readJson(ctx, path);
+    if (data && data.token) writeJson(ctx, path, {});
   }
 
-  function clearCachedToken(ctx) {
-    try {
-      ctx.host.keychain.deleteGenericPassword(KEYCHAIN_SERVICE);
-    } catch (e) {
-      ctx.host.log.info("keychain delete failed: " + String(e));
-    }
-    writeJson(ctx, ctx.app.pluginDataDir + "/auth.json", null);
-  }
-
-  function loadTokenFromKeychain(ctx) {
-    try {
-      const raw = ctx.host.keychain.readGenericPassword(KEYCHAIN_SERVICE);
-      if (raw) {
-        const parsed = ctx.util.tryParseJson(raw);
-        if (parsed && parsed.token) {
-          ctx.host.log.info("token loaded from OpenUsage keychain");
-          return { token: parsed.token, source: "keychain" };
-        }
-      }
-    } catch (e) {
-      ctx.host.log.info("OpenUsage keychain read failed: " + String(e));
-    }
-    return null;
-  }
-
+  // The token is read from Credential Manager on every probe and never stored by us.
   function loadTokenFromGhCli(ctx) {
     try {
       // gh (go-keyring) keeps the active account's token in Credential Manager as `gh:github.com:`
@@ -74,30 +45,13 @@
         }
         if (token) {
           ctx.host.log.info("token loaded from gh CLI keychain");
-          return { token: token, source: "gh-cli" };
+          return token;
         }
       }
     } catch (e) {
       ctx.host.log.info("gh CLI keychain read failed: " + String(e));
     }
     return null;
-  }
-
-  function loadTokenFromStateFile(ctx) {
-    const data = readJson(ctx, ctx.app.pluginDataDir + "/auth.json");
-    if (data && data.token) {
-      ctx.host.log.info("token loaded from state file");
-      return { token: data.token, source: "state" };
-    }
-    return null;
-  }
-
-  function loadToken(ctx) {
-    return (
-      loadTokenFromKeychain(ctx) ||
-      loadTokenFromGhCli(ctx) ||
-      loadTokenFromStateFile(ctx)
-    );
   }
 
   function fetchUsage(ctx, token) {
@@ -172,13 +126,11 @@
   }
 
   function probe(ctx) {
-    const cred = loadToken(ctx);
-    if (!cred) {
+    wipeLegacyTokenCopy(ctx);
+    const token = loadTokenFromGhCli(ctx);
+    if (!token) {
       throw "Not logged in. Run `gh auth login` first.";
     }
-
-    let token = cred.token;
-    let source = cred.source;
 
     let resp;
     try {
@@ -189,30 +141,7 @@
     }
 
     if (resp.status === 401 || resp.status === 403) {
-      // If cached token is stale, clear it and try fallback sources
-      if (source === "keychain") {
-        ctx.host.log.info("cached token invalid, trying fallback sources");
-        clearCachedToken(ctx);
-        const fallback = loadTokenFromGhCli(ctx);
-        if (fallback) {
-          try {
-            resp = fetchUsage(ctx, fallback.token);
-          } catch (e) {
-            ctx.host.log.error("fallback usage request exception: " + String(e));
-            throw "Usage request failed. Check your connection.";
-          }
-          if (resp.status >= 200 && resp.status < 300) {
-            // Fallback worked, persist the new token
-            saveToken(ctx, fallback.token);
-            token = fallback.token;
-            source = fallback.source;
-          }
-        }
-      }
-      // Still failing after retry
-      if (resp.status === 401 || resp.status === 403) {
-        throw "Token invalid. Run `gh auth login` to re-authenticate.";
-      }
+      throw "Token invalid. Run `gh auth login` to re-authenticate.";
     }
 
     if (resp.status < 200 || resp.status >= 300) {
@@ -222,11 +151,6 @@
         String(resp.status) +
         "). Try again later."
       );
-    }
-
-    // Persist gh-cli token to OpenUsage keychain for future use
-    if (source === "gh-cli") {
-      saveToken(ctx, token);
     }
 
     const data = ctx.util.tryParseJson(resp.bodyText);

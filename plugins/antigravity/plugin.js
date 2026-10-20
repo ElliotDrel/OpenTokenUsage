@@ -6,9 +6,10 @@
   ]
   var AGY_KEYCHAIN_SERVICE = "gemini"
   var AGY_KEYCHAIN_ACCOUNT = "antigravity"
+  // Production first: daily can answer 200 without the Gemini group (as upstream found too).
   var CLOUD_CODE_URLS = [
-    "https://daily-cloudcode-pa.googleapis.com",
     "https://cloudcode-pa.googleapis.com",
+    "https://daily-cloudcode-pa.googleapis.com",
   ]
   var LOAD_CODE_ASSIST_PATH = "/v1internal:loadCodeAssist"
   var FETCH_MODELS_PATH = "/v1internal:fetchAvailableModels"
