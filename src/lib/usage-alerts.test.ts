@@ -90,7 +90,7 @@ describe("collectUsageAlerts", () => {
 
   it("the next window alerts again after a real reset", () => {
     const [alert] = collect([line(90, 10 * 60 * 1000)])
-    expect(collect([line(82, 5 * HOUR)], alert!.keys).map((a) => a.title)).toEqual(["Claude: Session at 82%"])
+    expect(collect([line(82, 5 * HOUR)], alert!.keys).map((a) => a.title)).toEqual(["Claude: Session at 82% used"])
   })
 
   it("a reset time that jitters later is not a reset", () => {

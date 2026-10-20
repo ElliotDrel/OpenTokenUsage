@@ -90,9 +90,8 @@ export function collectUsageAlerts(args: {
       if (!wasSent(sent, prefix, window, `|t${level}`)) {
         const timeLeft = Number.isFinite(resetsAtMs) ? formatCompactDuration(resetsAtMs - nowMs) : null
         const shownPercent = Math.round(getDisplayedUsage(line.used, line.limit, displayMode).fraction * 100)
-        const direction = t(displayMode === "left" ? "settings.usageMode.left" : "settings.usageMode.used").toLocaleLowerCase()
         alerts.push({
-          title: `${t("alert.threshold.title", { provider: providerName, label, percent: shownPercent })} ${direction}`,
+          title: t(displayMode === "left" ? "alert.threshold.left" : "alert.threshold.title", { provider: providerName, label, percent: shownPercent }),
           body: timeLeft ? t("reset.in", { time: timeLeft }) : "",
           keys,
         })

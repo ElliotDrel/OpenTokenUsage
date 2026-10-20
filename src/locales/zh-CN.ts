@@ -205,6 +205,7 @@ export const zhCN: Messages = {
   "reset.tomorrowAt": "明天 {time} 重置",
   "reset.onDateAt": "{date} {time} 重置",
   "alert.threshold.title": "{provider}：{label} 已用 {percent}%",
+  "alert.threshold.left": "{provider}：{label} 剩余 {percent}%",
   "alert.reset.title": "{provider}：{label} 已重置",
   "alert.reset.body": "你的额度已再次可用。",
   "alert.pace.title": "{provider}：{label} 即将用完",
