@@ -205,6 +205,7 @@ export const ko: Messages = {
   "reset.tomorrowAt": "내일 {time}에 초기화",
   "reset.onDateAt": "{date} {time}에 초기화",
   "alert.threshold.title": "{provider}: {label} {percent}% 사용",
+  "alert.threshold.left": "{provider}: {label} {percent}% 남음",
   "alert.reset.title": "{provider}: {label} 초기화됨",
   "alert.reset.body": "한도를 다시 사용할 수 있습니다.",
   "alert.pace.title": "{provider}: {label} 곧 소진",
