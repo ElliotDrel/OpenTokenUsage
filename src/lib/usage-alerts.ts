@@ -1,5 +1,7 @@
 import { t, tLabel } from "@/lib/i18n"
 import type { MetricLine } from "@/lib/plugin-types"
+import type { DisplayMode } from "@/lib/settings"
+import { getDisplayedUsage } from "@/lib/usage-display"
 import { formatCompactDuration } from "@/lib/pace-tooltip"
 
 type ProgressLine = Extract<MetricLine, { type: "progress" }>
@@ -53,8 +55,9 @@ export function collectUsageAlerts(args: {
   nowMs: number
   /** Usage levels (percent) that notify, from the settings. */
   levels: readonly number[]
+  displayMode: DisplayMode
 }): UsageAlert[] {
-  const { pluginId, providerName, lines, previousLines, sent, nowMs } = args
+  const { pluginId, providerName, lines, previousLines, sent, nowMs, displayMode } = args
   const levels = [...args.levels].sort((a, b) => b - a)
   const alerts: UsageAlert[] = []
   const previousByLabel = new Map(progressLines(previousLines).map((line) => [line.label, line]))
@@ -86,8 +89,10 @@ export function collectUsageAlerts(args: {
       const keys = levels.filter((value) => value <= level).map((value) => `${base}|t${value}`)
       if (!wasSent(sent, prefix, window, `|t${level}`)) {
         const timeLeft = Number.isFinite(resetsAtMs) ? formatCompactDuration(resetsAtMs - nowMs) : null
+        const shownPercent = Math.round(getDisplayedUsage(line.used, line.limit, displayMode).fraction * 100)
+        const direction = t(displayMode === "left" ? "settings.usageMode.left" : "settings.usageMode.used").toLocaleLowerCase()
         alerts.push({
-          title: t("alert.threshold.title", { provider: providerName, label, percent: Math.round(fraction * 100) }),
+          title: `${t("alert.threshold.title", { provider: providerName, label, percent: shownPercent })} ${direction}`,
           body: timeLeft ? t("reset.in", { time: timeLeft }) : "",
           keys,
         })
