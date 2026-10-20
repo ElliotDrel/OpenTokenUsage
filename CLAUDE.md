@@ -89,6 +89,11 @@ This file holds the project facts that are easy to get wrong.
   in `TASKBAR_STRIP_COLOR_SCALES`, "base" = the text color). The strip and the tray styles that show numbers
   exclude each other: enabling the strip sets the tray to "icon", picking another style turns it off.
   A strip click opens the panel above the strip (`tray::toggle_panel_at`, via `run_on_main_thread`).
+  Placement (`taskbar_strip/placement.rs`): Right = beside the tray; "left" = the free side away from it,
+  the left edge, or the middle when `TaskbarAl` = 0 (icons left; Settings then labels it Center). The
+  strip keeps to the gaps between the buttons that `taskbar_strip/uia.rs` measures every second with UI
+  Automation (Windows 11's Start, Widgets and app buttons are XAML, no windows to measure), on its own
+  thread because those calls wait on Explorer.
 - Panel: the title bar pin (`panelPinned`) keeps it always on top. "Remember position": `tray.rs`
   records every position it sets itself (`place`); any other move while visible is the user's drag
   and is saved as `panelPosition` (outer top-left, physical px) in settings.json, then used by
