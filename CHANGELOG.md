@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.7.6
+
+Notifications follow your Left/Used setting, and the taskbar strip can sit on the other side of the taskbar without covering anything. Thanks to @ElliotDrel for both.
+
+### New Features
+- Taskbar strip: choose Right (beside the tray) or the other side of the taskbar, plus an offset. The other side follows how Windows aligns your icons: Left when they are centered, Center when they are on the left (#4 by @ElliotDrel)
+
+### Bug Fixes
+- Notifications: with Usage mode set to Left, a toast said "Session at 82%" while the app showed 18% left. Toasts now say "18% left" or "82% used", like the card; the alert levels still count what you have used (#10 by @ElliotDrel)
+- Taskbar strip: Start, Widgets (the weather) and app buttons could end up under the strip, also in the default Right position once Widgets sit beside the tray. The strip now measures them and stays in the free space next to them
+
 ## v0.7.5
 
 Antigravity shows its Gemini limits again, and Copilot no longer keeps a copy of your GitHub login.
