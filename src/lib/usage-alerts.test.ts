@@ -43,6 +43,11 @@ describe("collectUsageAlerts", () => {
     expect(collect([line(97, HOUR)], [], undefined, [80, 95], "left")[0]?.title).toBe("Claude: Session at 3% left")
   })
 
+  it("keeps an over-limit percentage when used, and stops at 0% left", () => {
+    expect(collect([line(120, HOUR)])[0]?.title).toBe("Claude: Session at 120% used")
+    expect(collect([line(120, HOUR)], [], undefined, [80, 95], "left")[0]?.title).toBe("Claude: Session at 0% left")
+  })
+
   it("jumping straight past 95% sends one alert that also covers 80%", () => {
     const alerts = collect([line(97, HOUR)])
     expect(alerts).toHaveLength(1)

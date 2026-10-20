@@ -89,7 +89,8 @@ export function collectUsageAlerts(args: {
       const keys = levels.filter((value) => value <= level).map((value) => `${base}|t${value}`)
       if (!wasSent(sent, prefix, window, `|t${level}`)) {
         const timeLeft = Number.isFinite(resetsAtMs) ? formatCompactDuration(resetsAtMs - nowMs) : null
-        const shownPercent = Math.round(getDisplayedUsage(line.used, line.limit, displayMode).fraction * 100)
+        // The amount, not the clamped fraction: an over-limit line says "120% used", as its card does.
+        const shownPercent = Math.round((getDisplayedUsage(line.used, line.limit, displayMode).amount / line.limit) * 100)
         alerts.push({
           title: t(displayMode === "left" ? "alert.threshold.left" : "alert.threshold.title", { provider: providerName, label, percent: shownPercent }),
           body: timeLeft ? t("reset.in", { time: timeLeft }) : "",
