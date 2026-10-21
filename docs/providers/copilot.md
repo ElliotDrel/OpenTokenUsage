@@ -4,7 +4,17 @@ Tracks GitHub Copilot usage quotas for both paid and free tier users.
 
 ## Authentication
 
-The plugin reads the GitHub CLI token (`gh auth login`) from Windows Credential Manager (`gh:github.com:`) on every probe and never stores it. The gh token can carry repo, org and workflow scopes, so it is not copied anywhere; a plain-text copy that versions up to 0.7.4 left in `auth.json` is wiped on the next probe.
+The plugin reads the GitHub CLI token (`gh auth login`) from Windows Credential Manager (`gh:<host>:`, `gh:github.com:` by default) on every probe and never stores it. The gh token can carry repo, org and workflow scopes, so it is not copied anywhere; a plain-text copy that versions up to 0.7.4 left in `auth.json` is wiped on the next probe.
+
+### GitHub Enterprise Cloud (`*.ghe.com`)
+
+Host selection, in order:
+
+1. The `GH_HOST` environment variable, if set to `github.com` or a `*.ghe.com` host (for example `example.ghe.com`). Other values are ignored.
+2. `github.com`.
+3. If github.com has no token, or rejects it (401/403), any other `*.ghe.com` host `gh` has a stored login for (Credential Manager entries matching `gh:*`, listed only at this point).
+
+Only `github.com` and `*.ghe.com` hosts ever receive the token. For a non-github.com host the usage endpoint is `https://api.<host>/copilot_internal/user`. Log in with `gh auth login --hostname <host>`.
 
 ### Setup
 
@@ -22,7 +32,7 @@ Choose "GitHub.com" and follow the prompts. The plugin will automatically read t
 
 ## API
 
-**Endpoint:** `https://api.github.com/copilot_internal/user`
+**Endpoint:** `https://api.github.com/copilot_internal/user` (`https://api.<host>/copilot_internal/user` for GHE.com)
 
 **Headers:**
 ```

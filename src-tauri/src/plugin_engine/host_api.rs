@@ -25,7 +25,8 @@ pub(crate) fn silent_command(program: &str) -> Command {
     cmd
 }
 
-const WHITELISTED_ENV_VARS: [&str; 16] = [
+const WHITELISTED_ENV_VARS: [&str; 17] = [
+    "GH_HOST",
     "CODEX_HOME",
     "CLAUDE_CONFIG_DIR",
     "CLAUDE_CODE_OAUTH_TOKEN",
@@ -2788,6 +2789,50 @@ fn read_windows_credential(_service: &str, _account: &str) -> Option<String> {
     None
 }
 
+/// Lists Credential Manager target names matching a wildcard filter such as `gh:*`.
+#[cfg(windows)]
+fn list_windows_credential_targets(filter: &str) -> Vec<String> {
+    use windows_sys::Win32::Foundation::{GetLastError, ERROR_NOT_FOUND};
+    use windows_sys::Win32::Security::Credentials::{CredEnumerateW, CredFree, CREDENTIALW};
+    let filter_w: Vec<u16> = filter.encode_utf16().chain(Some(0)).collect();
+    let mut count: u32 = 0;
+    let mut creds: *mut *mut CREDENTIALW = std::ptr::null_mut();
+    // SAFETY: on success CredEnumerateW fills `creds` with `count` valid CREDENTIALW pointers
+    // that stay valid until the single CredFree below; TargetName is NUL-terminated or null.
+    if unsafe { CredEnumerateW(filter_w.as_ptr(), 0, &mut count, &mut creds) } == 0 {
+        let err = unsafe { GetLastError() };
+        if err != ERROR_NOT_FOUND {
+            log::warn!("CredEnumerateW failed: error {}", err);
+        }
+        return Vec::new();
+    }
+    let mut targets = Vec::new();
+    for i in 0..count as usize {
+        let target_ptr = unsafe { (**creds.add(i)).TargetName };
+        if target_ptr.is_null() {
+            continue;
+        }
+        let mut len = 0usize;
+        while unsafe { *target_ptr.add(len) } != 0 {
+            len += 1;
+        }
+        let slice = unsafe { std::slice::from_raw_parts(target_ptr, len) };
+        targets.push(String::from_utf16_lossy(slice));
+    }
+    unsafe { CredFree(creds as *const _) };
+    targets
+}
+
+#[cfg(not(windows))]
+fn list_windows_credential_targets(_filter: &str) -> Vec<String> {
+    Vec::new()
+}
+
+/// Plugins may only enumerate `gh:`-prefixed credential names (the GitHub CLI's entries).
+fn is_allowed_credential_filter(filter: &str) -> bool {
+    filter.starts_with("gh:")
+}
+
 /// Windows has no macOS Keychain. `readGenericPassword(service, account)` reads the
 /// go-keyring item from Credential Manager; Credential Manager has no service-only lookup,
 /// so every other call fails fast and plugins fall back to their file-based sources.
@@ -2812,6 +2857,19 @@ fn inject_keychain<'js>(
                     }),
                     None => Err(Exception::throw_message(&ctx_inner, UNSUPPORTED)),
                 }
+            },
+        )?,
+    )?;
+    keychain_obj.set(
+        "listGenericPasswordTargets",
+        Function::new(
+            ctx.clone(),
+            |_ctx_inner: Ctx<'_>, filter: String| -> rquickjs::Result<String> {
+                if !is_allowed_credential_filter(&filter) {
+                    return Ok("[]".to_string());
+                }
+                Ok(serde_json::to_string(&list_windows_credential_targets(&filter))
+                    .unwrap_or_else(|_| "[]".to_string()))
             },
         )?,
     )?;
@@ -3254,6 +3312,29 @@ mod tests {
                 .get("writeGenericPasswordForCurrentUser")
                 .expect("writeGenericPasswordForCurrentUser");
         });
+    }
+
+    #[test]
+    fn credential_listing_is_restricted_to_gh_prefix() {
+        assert!(is_allowed_credential_filter("gh:*"));
+        assert!(!is_allowed_credential_filter("*"));
+        assert!(!is_allowed_credential_filter("Microsoft*"));
+
+        let rt = Runtime::new().expect("runtime");
+        let ctx = Context::full(&rt).expect("context");
+        ctx.with(|ctx| {
+            let app_data = std::env::temp_dir();
+            inject_host_api(&ctx, "test", &app_data, "0.0.0").expect("inject host api");
+            let out: String = ctx
+                .eval(r#"__openusage_ctx.host.keychain.listGenericPasswordTargets("*")"#)
+                .expect("js eval");
+            assert_eq!(out, "[]");
+        });
+    }
+
+    #[test]
+    fn gh_host_is_env_allowlisted() {
+        assert!(WHITELISTED_ENV_VARS.contains(&"GH_HOST"));
     }
 
     #[test]
