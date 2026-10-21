@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.7.7
+
+GitHub Copilot usage now also works for GitHub Enterprise Cloud accounts. Thanks to @OzmaXochi.
+
+### New Features
+- Copilot: GitHub Enterprise Cloud (`*.ghe.com`) accounts. The plugin uses the host in `GH_HOST`, otherwise github.com, then any `*.ghe.com` login the GitHub CLI has stored; log in with `gh auth login --hostname <host>`. A token only ever goes to its own host (#14 by @OzmaXochi)
+
 ## v0.7.6
 
 Notifications follow your Left/Used setting, and the taskbar strip can sit on the other side of the taskbar without covering anything. Thanks to @ElliotDrel for both.
