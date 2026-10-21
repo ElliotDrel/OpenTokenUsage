@@ -3861,7 +3861,7 @@ mod tests {
 
     #[test]
     fn redact_body_redacts_user_id_and_email() {
-        let body = r#"{"user_id": "user-iupzZ7KFykMLrnzpkHSq7wjo", "email": "rob@sunstory.com"}"#;
+        let body = r#"{"user_id": "user-iupzZ7KFykMLrnzpkHSq7wjo", "email": "jane@example.com"}"#;
         let redacted = redact_body(body);
         assert!(
             !redacted.contains("user-iupzZ7KFykMLrnzpkHSq7wjo"),
@@ -3869,7 +3869,7 @@ mod tests {
             redacted
         );
         assert!(
-            !redacted.contains("rob@sunstory.com"),
+            !redacted.contains("jane@example.com"),
             "email should be redacted, got: {}",
             redacted
         );
@@ -3880,7 +3880,7 @@ mod tests {
             redacted
         );
         assert!(
-            redacted.contains("rob@....com"),
+            redacted.contains("jane....com"),
             "email should show first4...last4, got: {}",
             redacted
         );
@@ -3914,7 +3914,7 @@ mod tests {
 
     #[test]
     fn redact_body_redacts_devin_org_and_account_display_name() {
-        let body = r#"{"orgId":"org-6b6e9de248db472bb25b296599ea3dc0","accountDisplayName":"rob@sunstory.com","devinInfo":{"org_id":"org-abcdef1234567890","account_display_name":"team@example.com"}}"#;
+        let body = r#"{"orgId":"org-6b6e9de248db472bb25b296599ea3dc0","accountDisplayName":"jane@example.com","devinInfo":{"org_id":"org-abcdef1234567890","account_display_name":"team@example.com"}}"#;
         let redacted = redact_body(body);
         assert!(
             !redacted.contains("org-6b6e9de248db472bb25b296599ea3dc0"),
@@ -3922,7 +3922,7 @@ mod tests {
             redacted
         );
         assert!(
-            !redacted.contains("rob@sunstory.com"),
+            !redacted.contains("jane@example.com"),
             "accountDisplayName should be redacted, got: {}",
             redacted
         );
@@ -3942,7 +3942,7 @@ mod tests {
             redacted
         );
         assert!(
-            redacted.contains("rob@....com"),
+            redacted.contains("jane....com"),
             "accountDisplayName should show first4...last4, got: {}",
             redacted
         );
@@ -3950,7 +3950,7 @@ mod tests {
 
     #[test]
     fn redact_body_redacts_team_id_payment_id_and_paths() {
-        let body = r#"{"teamId":"cc1ac023-9ff5-4c1f-a5a4-ae2a82df4243","paymentId":"cus_S5m1PGxjLWoc1c","binaryPath":"/opt/homebrew/bin/bunx","homePath":"/Users/rebers/.claude"}"#;
+        let body = r#"{"teamId":"cc1ac023-9ff5-4c1f-a5a4-ae2a82df4243","paymentId":"cus_S5m1PGxjLWoc1c","binaryPath":"/opt/homebrew/bin/bunx","homePath":"/Users/jdoe/.claude"}"#;
         let redacted = redact_body(body);
         assert!(
             !redacted.contains("cc1ac023-9ff5-4c1f-a5a4-ae2a82df4243"),
@@ -3968,7 +3968,7 @@ mod tests {
             redacted
         );
         assert!(
-            !redacted.contains("/Users/rebers/.claude"),
+            !redacted.contains("/Users/jdoe/.claude"),
             "path should be redacted, got: {}",
             redacted
         );
@@ -4027,10 +4027,10 @@ mod tests {
 
     #[test]
     fn redact_log_message_redacts_account_and_paths() {
-        let msg = "keychain read: service=Claude Code-credentials, account=rebers path=/opt/homebrew/bin/bunx home=/Users/rebers/.claude";
+        let msg = "keychain read: service=Claude Code-credentials, account=jdoe path=/opt/homebrew/bin/bunx home=/Users/jdoe/.claude";
         let redacted = redact_log_message(msg);
         assert!(
-            !redacted.contains("account=rebers"),
+            !redacted.contains("account=jdoe"),
             "account should be redacted, got: {}",
             redacted
         );
@@ -4040,7 +4040,7 @@ mod tests {
             redacted
         );
         assert!(
-            !redacted.contains("/Users/rebers/.claude"),
+            !redacted.contains("/Users/jdoe/.claude"),
             "path should be redacted, got: {}",
             redacted
         );
@@ -4059,10 +4059,10 @@ mod tests {
     #[test]
     fn redact_body_redacts_login_and_analytics_tracking_id() {
         let body =
-            r#"{"login":"robinebers","analytics_tracking_id":"c9df3f012bb8c2eb7aae6868ee8da6cf"}"#;
+            r#"{"login":"janedoe","analytics_tracking_id":"c9df3f012bb8c2eb7aae6868ee8da6cf"}"#;
         let redacted = redact_body(body);
         assert!(
-            !redacted.contains("robinebers"),
+            !redacted.contains("janedoe"),
             "login should be redacted, got: {}",
             redacted
         );
@@ -4087,19 +4087,19 @@ mod tests {
     #[test]
     fn redact_body_redacts_name_field() {
         let body =
-            r#"{"userStatus":{"name":"Robin Ebers","email":"rob@sunstory.com","planStatus":{}}}"#;
+            r#"{"userStatus":{"name":"Jane Doe","email":"jane@example.com","planStatus":{}}}"#;
         let redacted = redact_body(body);
         assert!(
-            !redacted.contains("Robin Ebers"),
+            !redacted.contains("Jane Doe"),
             "name should be redacted, got: {}",
             redacted
         );
         assert!(
-            !redacted.contains("rob@sunstory.com"),
+            !redacted.contains("jane@example.com"),
             "email should be redacted, got: {}",
             redacted
         );
-        // "Robin Ebers" is 11 chars (<=12) so becomes [REDACTED]
+        // "Jane Doe" is 8 chars (<=12) so becomes [REDACTED]
         assert!(
             redacted.contains("\"name\": \"[REDACTED]\""),
             "name should show [REDACTED], got: {}",
@@ -4151,15 +4151,15 @@ mod tests {
     fn redact_body_redacts_claude_profile_identity() {
         // [claude] GET /api/oauth/profile (live plan badge): identity fields must not reach logs,
         // while the plan fields the plugin reads stay readable.
-        let body = r#"{"account":{"uuid":"4f2c9a1e-8b3d-4e6f-9a7c-1d2e3f4a5b6c","full_name":"Robin Ebers","display_name":"Robin","email":"rob@sunstory.com","has_claude_max":true},"organization":{"uuid":"9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b","name":"Sunstory","organization_type":"claude_max","rate_limit_tier":"default_claude_max_20x"}}"#;
+        let body = r#"{"account":{"uuid":"4f2c9a1e-8b3d-4e6f-9a7c-1d2e3f4a5b6c","full_name":"Jane Doe","display_name":"Jane","email":"jane@example.com","has_claude_max":true},"organization":{"uuid":"9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b","name":"Example Org","organization_type":"claude_max","rate_limit_tier":"default_claude_max_20x"}}"#;
         let redacted = redact_body(body);
         for secret in [
             "4f2c9a1e-8b3d-4e6f-9a7c-1d2e3f4a5b6c",
             "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
-            "Robin Ebers",
-            "\"Robin\"",
-            "rob@sunstory.com",
-            "Sunstory\"",
+            "Jane Doe",
+            "\"Jane\"",
+            "jane@example.com",
+            "Example Org\"",
         ] {
             assert!(
                 !redacted.contains(secret),

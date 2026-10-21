@@ -223,7 +223,6 @@ export const es419: Messages = {
 
   "about.viewChangelog": "Ver registro de cambios",
   "about.windowsPort": "Versión para Windows",
-  "about.original": "Original",
   "about.source": "Código fuente",
   "support.buyMeACoffee": "Invítame un café",
   "support.navLabel": "Apoyar a OpenTokenUsage",

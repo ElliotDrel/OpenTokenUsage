@@ -223,7 +223,6 @@ export const en = {
 
   "about.viewChangelog": "View changelog",
   "about.windowsPort": "Windows port",
-  "about.original": "Original",
   "about.source": "Source code",
   "support.buyMeACoffee": "Buy me a coffee",
   "support.navLabel": "Support OpenTokenUsage",

@@ -223,7 +223,6 @@ export const zhCN: Messages = {
 
   "about.viewChangelog": "查看更新日志",
   "about.windowsPort": "Windows 移植版",
-  "about.original": "原版",
   "about.source": "源代码",
   "support.buyMeACoffee": "请我喝杯咖啡",
   "support.navLabel": "支持 OpenTokenUsage",

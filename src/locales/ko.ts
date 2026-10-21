@@ -223,7 +223,6 @@ export const ko: Messages = {
 
   "about.viewChangelog": "변경 로그 보기",
   "about.windowsPort": "Windows 포팅",
-  "about.original": "원본",
   "about.source": "소스 코드",
   "support.buyMeACoffee": "커피 한 잔 사주기",
   "support.navLabel": "OpenTokenUsage 후원하기",
