@@ -223,7 +223,6 @@ export const ptBR: Messages = {
 
   "about.viewChangelog": "Ver histórico de alterações",
   "about.windowsPort": "Versão para Windows",
-  "about.original": "Original",
   "about.source": "Código-fonte",
   "support.buyMeACoffee": "Me pague um café",
   "support.navLabel": "Apoiar o OpenTokenUsage",

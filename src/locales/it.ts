@@ -223,7 +223,6 @@ export const it: Messages = {
 
   "about.viewChangelog": "Visualizza registro modifiche",
   "about.windowsPort": "Porting per Windows",
-  "about.original": "Originale",
   "about.source": "Codice sorgente",
   "support.buyMeACoffee": "Offrimi un caffè",
   "support.navLabel": "Sostieni OpenTokenUsage",

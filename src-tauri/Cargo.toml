@@ -2,7 +2,7 @@
 name = "opentokenusage"
 version = "0.7.7"
 description = "OpenTokenUsage - AI subscription usage tracker for Windows"
-authors = ["Robin Ebers"]
+authors = ["poweruserz"]
 edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

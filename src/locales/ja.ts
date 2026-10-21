@@ -223,7 +223,6 @@ export const ja: Messages = {
 
   "about.viewChangelog": "変更履歴を表示",
   "about.windowsPort": "Windows 移植版",
-  "about.original": "オリジナル",
   "about.source": "ソース コード",
   "support.buyMeACoffee": "コーヒーをおごる",
   "support.navLabel": "OpenTokenUsage を支援",

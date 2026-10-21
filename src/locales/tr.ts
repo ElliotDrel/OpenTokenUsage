@@ -223,7 +223,6 @@ export const tr: Messages = {
 
   "about.viewChangelog": "Değişiklik günlüğünü görüntüle",
   "about.windowsPort": "Windows uyarlaması",
-  "about.original": "Orijinal",
   "about.source": "Kaynak kod",
   "support.buyMeACoffee": "Bana bir kahve ısmarlayın",
   "support.navLabel": "OpenTokenUsage'ı destekleyin",
