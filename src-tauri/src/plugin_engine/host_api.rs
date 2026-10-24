@@ -395,7 +395,6 @@ fn redact_body(body: &str) -> String {
         "idToken",
         "accessToken",
         "refreshToken",
-        "id",
         "user_id",
         "userId",
         "account_id",
@@ -432,6 +431,22 @@ fn redact_body(body: &str) -> String {
                 })
                 .to_string();
         }
+    }
+
+    // Reset inventories use a generic `id`; scope it to credit/grant arrays so model ids
+    // in Claude's usage limits stay readable.
+    if let (Ok(inventories), Ok(ids)) = (
+        regex_lite::Regex::new(r#""(?:credits|grants)"\s*:\s*\[[^\]]*\]"#),
+        regex_lite::Regex::new(r#""id":\s*"([^"]+)""#),
+    ) {
+        result = inventories
+            .replace_all(&result, |array: &regex_lite::Captures| {
+                ids.replace_all(&array[0], |id: &regex_lite::Captures| {
+                    format!("\"id\": \"{}\"", redact_value(&id[1]))
+                })
+                .to_string()
+            })
+            .to_string();
     }
 
     // [claude] /api/oauth/profile account.display_name is the user's name; the same key under
@@ -2875,8 +2890,10 @@ fn inject_keychain<'js>(
                 if !is_allowed_credential_filter(&filter) {
                     return Ok("[]".to_string());
                 }
-                Ok(serde_json::to_string(&list_windows_credential_targets(&filter))
-                    .unwrap_or_else(|_| "[]".to_string()))
+                Ok(
+                    serde_json::to_string(&list_windows_credential_targets(&filter))
+                        .unwrap_or_else(|_| "[]".to_string()),
+                )
             },
         )?,
     )?;
