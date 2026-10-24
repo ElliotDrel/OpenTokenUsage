@@ -395,6 +395,7 @@ fn redact_body(body: &str) -> String {
         "idToken",
         "accessToken",
         "refreshToken",
+        "id",
         "user_id",
         "userId",
         "account_id",
@@ -405,6 +406,11 @@ fn redact_body(body: &str) -> String {
         "orgId",
         "account_display_name",
         "accountDisplayName",
+        "credit_id",
+        "creditId",
+        "grant_id",
+        "grantId",
+        "next_grant_id",
         "payment_id",
         "paymentId",
         "profile_arn",
@@ -1164,6 +1170,7 @@ pub fn inject_utils(ctx: &rquickjs::Ctx<'_>) -> rquickjs::Result<()> {
                     var line = { type: "text", label: opts.label, value: opts.value };
                     if (opts.color) line.color = opts.color;
                     if (opts.subtitle) line.subtitle = opts.subtitle;
+                    if (opts.resetCredits) line.resetCredits = opts.resetCredits;
                     return line;
                 },
                 progress: function(opts) {
@@ -4178,6 +4185,16 @@ mod tests {
             "got: {}",
             redacted
         );
+    }
+
+    #[test]
+    fn redact_body_redacts_reset_credit_identifiers() {
+        let body = r#"{"credits":[{"id":"private-credit-123456","credit_id":"private-credit-123456","status":"available","expires_at":2000000000}],"cedar_ember":{"next_grant_id":"private-grant-123456","grants":[{"id":"private-grant-123456","resets_left":1,"ends_at":"2099-01-01T00:00:00Z"}]}}"#;
+        let redacted = redact_body(body);
+        assert!(!redacted.contains("private-credit-123456"));
+        assert!(!redacted.contains("private-grant-123456"));
+        assert!(redacted.contains("expires_at"));
+        assert!(redacted.contains("resets_left"));
     }
 
     #[test]
